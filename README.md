@@ -5,13 +5,13 @@ Like the GangliaContext for Hadoop, sends metrics to Graphite
 
 Compile:
 
-    $ jar -cf GraphiteContext.jar -C org/ .
+    $ mvn install
 
 Installation:
 
 In your hadoop-env.sh file (usually in /etc/hadoop/conf/), add the location of the GraphiteContext.jar file into the HADOOP_CLASSPATH
 
-example: export HADOOP_CLASSPATH="/home/brandon/GraphiteContext.jar"
+example: export HADOOP_CLASSPATH="/[path_to]/GraphiteContext.jar"
 
 Configuration:
 
