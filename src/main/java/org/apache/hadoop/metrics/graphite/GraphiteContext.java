@@ -1,5 +1,5 @@
 /*
- * GangliaContext.java
+ * GraphiteContext.java
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,7 +20,6 @@
 
 package org.apache.hadoop.metrics.graphite;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -30,7 +29,6 @@ import org.apache.hadoop.metrics.spi.AbstractMetricsContext;
 import org.apache.hadoop.metrics.spi.OutputRecord;
 
 import java.net.Socket;
-import java.net.SocketException;
 
 /**
  * Metrics context for writing metrics to Graphite.<p/>
@@ -45,6 +43,7 @@ import java.net.SocketException;
  * mapred.port=2013
  * </pre>
  */
+@SuppressWarnings("deprecation")
 public class GraphiteContext extends AbstractMetricsContext {
     
   /* Configuration attribute names */
@@ -93,7 +92,6 @@ public class GraphiteContext extends AbstractMetricsContext {
         sb.append(tm);
         sb.append("\n");
         emitMetric(sb.toString()); 
-        sb = null; 
         sb = new StringBuilder();
     }
   }
