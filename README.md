@@ -15,24 +15,17 @@ example: export HADOOP_CLASSPATH="/[path_to]/GraphiteContext.jar"
 
 Configuration:
 
-In your hadoop-metrics.properties file, add the following for all metrics
+In your hadoop-metrics2.properties file, add the following for all metrics
 
-    mapred.class=org.apache.hadoop.metrics.graphite.GraphiteContext
-    mapred.period=60
-    mapred.serverName=@Your Graphite Server@
-    mapred.port=2013
-    jvm.class=org.apache.hadoop.metrics.graphite.GraphiteContext
-    jvm.period=60
-    jvm.serverName=@Your Graphite Server@
-    jvm.port=2013
-    dfs.class=org.apache.hadoop.metrics.graphite.GraphiteContext
-    dfs.period=60
-    dfs.serverName=@Your Graphite Server@
-    dfs.port=2013
-    ugi.class=org.apache.hadoop.metrics.graphite.GraphiteContext
-    ugi.period=60
-    ugi.serverName=@Your Graphite Server@
-    ugi.port=2013
+*.sink.graphite.class=org.apache.hadoop.metrics2.graphite.GraphiteContext
+# default sampling period
+*.period=10
+namenode.sink.graphite.servers=localhost:2003
+datanode.sink.graphite.servers=localhost:2003
+nodemanager.sink.graphite.servers=localhost:2003
+resourcemanager.sink.graphite.servers=localhost:2003
+secondarynamenode.sink.graphite.servers=localhost:2003
+
 
 metric.path=@Your Path@ can be used to specify the path in Graphite. Defaults to Platform.Hadoop
 
