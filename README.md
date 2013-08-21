@@ -11,7 +11,7 @@ Installation:
 
 In your hadoop-env.sh file (usually in /etc/hadoop/conf/), add the location of the GraphiteContext.jar file into the HADOOP_CLASSPATH
 
-example: export HADOOP_CLASSPATH="/[path_to]/GraphiteContext.jar"
+example: export HADOOP_CLASSPATH="/[path_to]/GraphiteMaven-1.1-SNAPSHOT.jar
 
 Configuration:
 
