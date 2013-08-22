@@ -108,9 +108,12 @@ public class GraphiteContext implements MetricsSink {
 
   @Override
   public void init(SubsetConfiguration conf) {
-    LOG.debug("Initializing the GraphiteSink");
+    LOG.error("Initializing the GraphiteSink");
     List<? extends SocketAddress> metricsServers = Servers.parse(conf.getString(SERVER_NAME_PROPERTY),
         DEFAULT_PORT);
+    for (SocketAddress metricServer: metricsServers){
+      LOG.info("Adding metricServer" + metricServer);
+    }
 
     try {
       socket = new Socket();
