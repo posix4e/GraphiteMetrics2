@@ -55,7 +55,7 @@ public class GraphiteContext implements MetricsSink {
 
 
   /* Configuration attribute names */
-  protected static final String SERVER_NAME_PROPERTY = "serverName";
+  protected static final String SERVER_NAME_PROPERTY = "servers";
   public final Log LOG = LogFactory.getLog(this.getClass());
   Queue<String> metricsQueue = new LinkedBlockingDeque<String>();
 
