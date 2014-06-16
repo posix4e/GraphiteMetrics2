@@ -158,9 +158,10 @@ public class GraphiteContext implements MetricsSink {
         socket.connect(metricsServers.get(0));
       } catch (IOException e) {
         LOG.error(e);
-        LOG.debug("Retrying in:" + retrySocketInterval/1000 + "s");
+        LOG.info("Retrying in:" + retrySocketInterval/1000 + "s");
         try {
           Thread.sleep(retrySocketInterval);
+          socket = new Socket();
         } catch (InterruptedException e1) {
           LOG.error(e1);
         }
