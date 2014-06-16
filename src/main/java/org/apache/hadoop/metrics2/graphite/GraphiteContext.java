@@ -65,6 +65,7 @@ public class GraphiteContext implements MetricsSink {
   public final Log LOG = LogFactory.getLog(this.getClass());
   Queue<String> metricsQueue = new LinkedBlockingDeque<String>();
   private List<? extends SocketAddress> metricsServers;
+  private boolean retryFlag = true;
 
   @Override
   public void putMetrics(MetricsRecord metricsRecord) {
@@ -150,6 +151,10 @@ public class GraphiteContext implements MetricsSink {
       }
     }
 
+    if (!retryFlag) {
+      return;
+    }
+
     socket = new Socket();
 
     int retryCount = 1;
@@ -163,6 +168,7 @@ public class GraphiteContext implements MetricsSink {
           Thread.sleep(retrySocketInterval);
           socket = new Socket();
         } catch (InterruptedException e1) {
+          retryFlag = false;
           LOG.error(e1);
         }
       }
