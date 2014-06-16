@@ -69,6 +69,9 @@ public class GraphiteContext implements MetricsSink {
         hostname = "noHostnameListed";
       }
     }
+    
+    //To avoid domain name hierarchy to interfere with graphite metric hierarchy
+    hostname = hostname.replace('.', '-');
 
     StringBuilder sb = new StringBuilder();
     long tm = System.currentTimeMillis() / 1000;
