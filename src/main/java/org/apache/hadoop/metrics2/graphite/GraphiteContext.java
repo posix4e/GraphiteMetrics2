@@ -128,7 +128,7 @@ public class GraphiteContext implements MetricsSink {
     }
 
     retrySocketInterval = conf.getInt(RETRY_SOCKET_INTERVAL, DEFAULT_RETRY_SOCKET_INTERVAL);
-    socketConnectionRetries = conf.getInt(SOCKET_CONNECTION_RETRIES,DEFAULT_SOCKET_CONNECTION_RETRIES);
+    socketConnectionRetries = conf.getInt(SOCKET_CONNECTION_RETRIES, DEFAULT_SOCKET_CONNECTION_RETRIES);
 
     socket = new Socket();
     try {
@@ -158,7 +158,7 @@ public class GraphiteContext implements MetricsSink {
         socket.connect(metricsServers.get(0));
       } catch (IOException e) {
         LOG.error(e);
-        LOG.info("Retrying in:" + retrySocketInterval/1000 + "s");
+        LOG.warn("Retrying in:" + retrySocketInterval/1000 + "s");
         try {
           Thread.sleep(retrySocketInterval);
           socket = new Socket();
