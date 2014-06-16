@@ -139,6 +139,7 @@ public class GraphiteContext implements MetricsSink {
 
   }
 
+  // Retries the connection according to retry parameters obtained through conf
   private void establishConnection() {
 
     if (socket != null && !socket.isClosed()) {
