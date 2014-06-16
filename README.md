@@ -25,3 +25,9 @@ In your hadoop-metrics2.properties file, add the following for all metrics
 	nodemanager.sink.graphite.servers=localhost:2003
 	resourcemanager.sink.graphite.servers=localhost:2003
 	secondarynamenode.sink.graphite.servers=localhost:2003
+
+	#Optional parameters for socket connection retry (Values below are default values for the same)
+	*.sink.graphite.retry_socket_interval=60000  #in milliseconds
+	*.sink.graphite.socket_connection_retries=10  #Set it to 0 if you do not want it to be retried
+	
+	
