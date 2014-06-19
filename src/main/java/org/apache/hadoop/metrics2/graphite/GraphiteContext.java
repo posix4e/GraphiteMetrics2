@@ -34,6 +34,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketException;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -52,12 +53,19 @@ public class GraphiteContext implements MetricsSink {
   Socket socket;
 
   private static final int DEFAULT_PORT = 2003;
-
+  private static final int DEFAULT_RETRY_SOCKET_INTERVAL = 60000;
+  private static final int DEFAULT_SOCKET_CONNECTION_RETRIES = 10;
+  private int retrySocketInterval;
+  private int socketConnectionRetries;
 
   /* Configuration attribute names */
   protected static final String SERVER_NAME_PROPERTY = "servers";
+  private static final String RETRY_SOCKET_INTERVAL = "retry_socket_interval";
+  private static final String SOCKET_CONNECTION_RETRIES = "socket_connection_retries";
   public final Log LOG = LogFactory.getLog(this.getClass());
   Queue<String> metricsQueue = new LinkedBlockingDeque<String>();
+  private List<? extends SocketAddress> metricsServers;
+  private boolean retryFlag = true;
 
   @Override
   public void putMetrics(MetricsRecord metricsRecord) {
@@ -69,6 +77,9 @@ public class GraphiteContext implements MetricsSink {
         hostname = "noHostnameListed";
       }
     }
+
+    //To avoid domain name hierarchy to interfere with graphite metric hierarchy
+    hostname = hostname.replace('.', '-');
 
     StringBuilder sb = new StringBuilder();
     long tm = System.currentTimeMillis() / 1000;
@@ -101,7 +112,9 @@ public class GraphiteContext implements MetricsSink {
       }
       writer.flush();
 
-    } catch (IOException e) {
+    } catch(SocketException e) {
+      establishConnection();
+    } catch (Exception e) {
       LOG.error(e);
     }
   }
@@ -109,18 +122,57 @@ public class GraphiteContext implements MetricsSink {
   @Override
   public void init(SubsetConfiguration conf) {
     LOG.info("Initializing the GraphiteSink");
-    List<? extends SocketAddress> metricsServers = Servers.parse(conf.getString(SERVER_NAME_PROPERTY),
+    metricsServers = Servers.parse(conf.getString(SERVER_NAME_PROPERTY),
         DEFAULT_PORT);
     for (SocketAddress metricServer: metricsServers){
       LOG.info("Adding metricServer" + metricServer);
     }
 
+    retrySocketInterval = conf.getInt(RETRY_SOCKET_INTERVAL, DEFAULT_RETRY_SOCKET_INTERVAL);
+    socketConnectionRetries = conf.getInt(SOCKET_CONNECTION_RETRIES, DEFAULT_SOCKET_CONNECTION_RETRIES);
+
+    socket = new Socket();
     try {
-      socket = new Socket();
       socket.connect(metricsServers.get(0));
-    } catch (IOException e) {
+    } catch(IOException e) {
       LOG.error(e);
     }
 
+  }
+
+  // Retries the connection according to retry parameters obtained through conf
+  private void establishConnection() {
+
+    if (socket != null && !socket.isClosed()) {
+      try {
+        socket.close();
+      } catch (IOException e) {
+        LOG.error(e);
+      }
+    }
+
+    if (!retryFlag) {
+      return;
+    }
+
+    socket = new Socket();
+
+    int retryCount = 1;
+    while (!socket.isConnected() && retryCount <= socketConnectionRetries) {
+      try {
+        socket.connect(metricsServers.get(0));
+      } catch (IOException e) {
+        LOG.error(e);
+        LOG.warn("Retrying in:" + retrySocketInterval/1000 + "s");
+        try {
+          Thread.sleep(retrySocketInterval);
+          socket = new Socket();
+        } catch (InterruptedException e1) {
+          retryFlag = false;
+          LOG.error(e1);
+        }
+      }
+      retryCount++;
+    }
   }
 }
